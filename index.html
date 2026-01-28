@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERTEX COMMAND CENTER // ÁNGEL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
+            min-height: 100vh;
+            font-family: 'Rajdhani', sans-serif;
+            color: #00ffff;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background grid */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+        
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.6;
+            box-shadow: 0 0 10px #00ffff;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            50% { transform: translateY(-100vh) scale(1); }
+        }
+        
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, #00ffff, transparent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; width: 200px; }
+            50% { opacity: 1; width: 400px; }
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00, #00ffff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 5s ease infinite;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            letter-spacing: 10px;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            color: #ff00ff;
+            margin-top: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            animation: blink 1s ease-in-out infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Command Panel */
+        .command-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+        
+        .command-module {
+            background: linear-gradient(145deg, rgba(20, 20, 40, 0.9), rgba(10, 10, 20, 0.95));
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        
+        .command-module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .command-module:hover::before {
+            left: 100%;
+        }
+        
+        .command-module:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #00ffff;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.05);
+        }
+        
+        .module-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 20px currentColor);
+            transition: transform 0.3s;
+        }
+        
+        .command-module:hover .module-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        .module-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .module-desc {
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+        
+        /* Individual module colors */
+        .module-crm { --accent: #ff6b6b; }
+        .module-crm .module-icon { color: #ff6b6b; }
+        .module-crm .module-title { color: #ff6b6b; }
+        .module-crm:hover { border-color: #ff6b6b; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255,107,107,0.3); }
+        
+        .module-todo { --accent: #4ecdc4; }
+        .module-todo .module-icon { color: #4ecdc4; }
+        .module-todo .module-title { color: #4ecdc4; }
+        .module-todo:hover { border-color: #4ecdc4; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(78,205,196,0.3); }
+        
+        .module-eloduk { --accent: #a55eea; }
+        .module-eloduk .module-icon { color: #a55eea; }
+        .module-eloduk .module-title { color: #a55eea; }
+        .module-eloduk:hover { border-color: #a55eea; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(165,94,234,0.3); }
+        
+        .module-drive { --accent: #feca57; }
+        .module-drive .module-icon { color: #feca57; }
+        .module-drive .module-title { color: #feca57; }
+        .module-drive:hover { border-color: #feca57; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(254,202,87,0.3); }
+        
+        .module-ventas { --accent: #ff9ff3; }
+        .module-ventas .module-icon { color: #ff9ff3; }
+        .module-ventas .module-title { color: #ff9ff3; }
+        .module-ventas:hover { border-color: #ff9ff3; box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255,159,243,0.3); }
+        
+        /* Launch Button */
+        .launch-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(145deg, var(--accent), rgba(0,0,0,0.5));
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .launch-btn::before {
+            content: '▶';
+            font-size: 0.8em;
+        }
+        
+        .launch-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--accent);
+        }
+        
+        .launch-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Corner decorations */
+        .corner-decor {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(0, 255, 255, 0.2);
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .corner-decor.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .corner-decor.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .corner-decor.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .corner-decor.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 3px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo { font-size: 1.8em; letter-spacing: 5px; }
+            .subtitle { font-size: 0.9em; }
+            .command-panel { padding: 10px; gap: 20px; }
+            .command-module { padding: 20px; }
+            .module-icon { font-size: 3em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 4.5s;"></div>
+    </div>
+    
+    <div class="corner-decor top-left"></div>
+    <div class="corner-decor top-right"></div>
+    <div class="corner-decor bottom-left"></div>
+    <div class="corner-decor bottom-right"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">VERTEX</h1>
+            <p class="subtitle">Command Center // Ángel</p>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>SISTEMAS ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot" style="background: #ff00ff; box-shadow: 0 0 10px #ff00ff;"></span>
+                    <span id="datetime">CARGANDO...</span>
+                </div>
+            </div>
+        </header>
+        
+        <main class="command-panel">
+            <!-- CRM -->
+            <div class="command-module module-crm" onclick="launch('crm')">
+                <span class="module-icon">🎯</span>
+                <h2 class="module-title">CRM</h2>
+                <p class="module-desc">Gestión de clientes y oportunidades comerciales</p>
+                <button class="launch-btn">Iniciar</button>
+            </div>
+            
+            <!-- TODO -->
+            <div class="command-module module-todo" onclick="launch('todo')">
+                <span class="module-icon">✅</span>
+                <h2 class="module-title">Todo</h2>
+                <p class="module-desc">Gestión de tareas y pendientes</p>
+                <button class="launch-btn">Iniciar</button>
+            </div>
+            
+            <!-- ELODUK -->
+            <div class="command-module module-eloduk" onclick="launch('eloduk')">
+                <span class="module-icon">📚</span>
+                <h2 class="module-title">Eloduk</h2>
+                <p class="module-desc">Base de conocimientos y documentación</p>
+                <button class="launch-btn">Iniciar</button>
+            </div>
+            
+            <!-- OneDrive / Ventas -->
+            <div class="command-module module-ventas" onclick="launch('ventas')">
+                <span class="module-icon">📁</span>
+                <h2 class="module-title">Ventas</h2>
+                <p class="module-desc">Carpeta de documentos comerciales</p>
+                <button class="launch-btn">Iniciar</button>
+            </div>
+            
+            <!-- Google Drive -->
+            <div class="command-module module-drive" onclick="launch('drive')">
+                <span class="module-icon">🔍</span>
+                <h2 class="module-title">Drive</h2>
+                <p class="module-desc">Explorador de Google Drive</p>
+                <button class="launch-btn">Iniciar</button>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            VERTEX DEVELOPER © 2026 // MODO: OPERATIVO
+        </footer>
+    </div>
+    
+    <script>
+        // Update datetime
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                day: '2-digit', 
+                month: 'short',
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('datetime').textContent = now.toLocaleString('es-ES', options).toUpperCase();
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        // Launch functions - URLs to be configured
+        const urls = {
+            crm: 'https://crm.contextia.cloud',
+            todo: 'https://todo.contextia.cloud',
+            eloduk: 'https://eloduk.contextia.cloud',
+            ventas: 'https://onedrive.live.com', // Placeholder
+            drive: 'https://drive.google.com'
+        };
+        
+        function launch(module) {
+            // Visual feedback
+            const btn = event.currentTarget;
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+                window.open(urls[module], '_blank');
+            }, 200);
+        }
+        
+        // Add hover sound effect placeholder
+        document.querySelectorAll('.command-module').forEach(module => {
+            module.addEventListener('mouseenter', () => {
+                // Could add sound effect here
+            });
+        });
+    </script>
+</body>
+</html>
