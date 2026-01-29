@@ -1,15 +1,35 @@
 {
   "name": "angel-dashboard",
-  "version": "1.0.0",
-  "description": "Panel de comandos intergaláctico para Ángel - Vertex",
+  "version": "1.1.0",
+  "description": "Centro de comandos futurista para Ángel - Vertex Command Center",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "pm2:start": "pm2 start server.js --name angel-dashboard",
+    "pm2:stop": "pm2 stop angel-dashboard",
+    "pm2:restart": "pm2 restart angel-dashboard",
+    "pm2:status": "pm2 status angel-dashboard",
+    "test": "curl http://localhost:3002/api/health",
+    "stats": "curl http://localhost:3002/api/stats | json_pp",
+    "open": "open http://localhost:3002"
   },
   "engines": {
     "node": ">=18"
   },
-  "keywords": ["dashboard", "vertex", "command-center"],
-  "author": "Leo",
-  "license": "ISC"
+  "keywords": [
+    "dashboard", 
+    "vertex", 
+    "command-center", 
+    "pwa", 
+    "sci-fi",
+    "angel",
+    "futuristic"
+  ],
+  "author": "Leo (Vertex Team)",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "file://./projects/angel-dashboard"
+  }
 }

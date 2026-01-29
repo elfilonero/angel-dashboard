@@ -169,6 +169,46 @@
             50% { opacity: 0.3; }
         }
         
+        .system-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75em;
+            opacity: 0.6;
+            margin-top: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .system-stats span {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            letter-spacing: 1px;
+        }
+        
+        /* Module entrance animations */
+        .module-entrance {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            animation: moduleEntrance 0.8s ease-out forwards;
+        }
+        
+        @keyframes moduleEntrance {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            60% {
+                opacity: 0.8;
+                transform: translateY(-10px) scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
         /* Command Panel */
         .command-panel {
             display: grid;
@@ -393,6 +433,12 @@
                     <span id="datetime">CARGANDO...</span>
                 </div>
             </div>
+            
+            <div class="system-stats">
+                <span id="uptime">SISTEMA: INICIANDO...</span>
+                <span id="requests">ACCESOS: 0</span>
+                <span id="visitors">VISITANTES: 0</span>
+            </div>
         </header>
         
         <main class="command-panel">
@@ -456,8 +502,27 @@
             };
             document.getElementById('datetime').textContent = now.toLocaleString('es-ES', options).toUpperCase();
         }
+        
+        // Load system stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('uptime').textContent = `UPTIME: ${stats.uptime.formatted}`;
+                    document.getElementById('requests').textContent = `ACCESOS: ${stats.requests}`;
+                    document.getElementById('visitors').textContent = `VISITANTES: ${stats.uniqueVisitors}`;
+                }
+            } catch (error) {
+                console.log('Stats not available:', error);
+            }
+        }
+        
+        // Initialize
         updateDateTime();
+        loadStats();
         setInterval(updateDateTime, 1000);
+        setInterval(loadStats, 30000); // Update stats every 30 seconds
         
         // Launch functions - URLs to be configured
         const urls = {
@@ -471,19 +536,73 @@
         function launch(module) {
             // Visual feedback
             const btn = event.currentTarget;
-            btn.style.transform = 'scale(0.95)';
+            const originalTransform = btn.style.transform;
+            
+            // Feedback animation
+            btn.style.transform = 'scale(0.95) rotateY(10deg)';
+            btn.style.filter = 'brightness(1.5) saturate(1.5)';
+            
+            // Play "launch" effect
             setTimeout(() => {
-                btn.style.transform = '';
-                window.open(urls[module], '_blank');
-            }, 200);
+                btn.style.transform = originalTransform;
+                btn.style.filter = '';
+                
+                // Open module URL
+                if (urls[module]) {
+                    window.open(urls[module], '_blank');
+                    
+                    // Visual confirmation
+                    const icon = btn.querySelector('.module-icon');
+                    const originalIcon = icon.textContent;
+                    icon.textContent = '🚀';
+                    setTimeout(() => {
+                        icon.textContent = originalIcon;
+                    }, 1000);
+                    
+                    console.log(`[VERTEX] Launching module: ${module.toUpperCase()}`);
+                } else {
+                    console.error(`[VERTEX] Module not configured: ${module}`);
+                }
+            }, 150);
         }
         
-        // Add hover sound effect placeholder
-        document.querySelectorAll('.command-module').forEach(module => {
+        // Add hover effects and simulated sound feedback
+        document.querySelectorAll('.command-module').forEach((module, index) => {
             module.addEventListener('mouseenter', () => {
-                // Could add sound effect here
+                // Simulated sound effect via visual feedback
+                module.style.boxShadow = `
+                    0 20px 40px rgba(0, 0, 0, 0.4),
+                    0 0 30px rgba(0, 255, 255, 0.4),
+                    inset 0 0 30px rgba(0, 255, 255, 0.1)
+                `;
+                
+                // Log hover for debugging
+                console.log(`[VERTEX] Module hover: ${module.className.split(' ').find(c => c.startsWith('module-'))}`);
             });
+            
+            module.addEventListener('mouseleave', () => {
+                module.style.boxShadow = '';
+            });
+            
+            // Add staggered entrance animation
+            module.style.animationDelay = `${index * 0.1}s`;
+            module.classList.add('module-entrance');
         });
+        
+        // Check module connectivity (future enhancement)
+        function checkModuleStatus() {
+            Object.entries(urls).forEach(([module, url]) => {
+                // Could implement ping checks here
+                console.log(`[VERTEX] Module ${module.toUpperCase()}: ${url}`);
+            });
+        }
+        
+        // Initialization sequence
+        setTimeout(() => {
+            console.log('[VERTEX] Command Center initialized');
+            console.log('[VERTEX] Available modules:', Object.keys(urls).join(', '));
+            checkModuleStatus();
+        }, 1000);
     </script>
 </body>
 </html>
