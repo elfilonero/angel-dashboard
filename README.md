@@ -147,3 +147,6 @@ angel-dashboard/
 
 ---
 *VERTEX COMMAND CENTER // ÁNGEL © 2026*
+---
+## 🔧 Protocolo de Herramientas Externas
+Ver [PROTOCOLO-HERRAMIENTAS-EXTERNAS.md](./PROTOCOLO-HERRAMIENTAS-EXTERNAS.md) — Procedimiento para aprender y usar herramientas externas (generadores IA, APIs, plataformas SaaS, etc.).
